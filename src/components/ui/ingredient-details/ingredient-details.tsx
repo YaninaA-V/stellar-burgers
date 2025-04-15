@@ -16,7 +16,7 @@ export const IngredientDetailsUI: FC<IngredientDetailsUIProps> = memo(
         />
         <h3 className='text text_type_main-medium mt-2 mb-4'>{name}</h3>
         <ul className={`${styles.nutritional_values} text_type_main-default`}>
-          <li className={styles.nutritional_value}>
+          <li className={styles.nutritional_value} data-testid='calories'>
             <p className={`text mb-2 ${styles.text}`}>Калории, ккал</p>
             <p className={`text text_type_digits-default`}>{calories}</p>
           </li>
