@@ -12,6 +12,24 @@ describe('Добавление ингредиента из списка ингр
         cy.get('[data-ingredient="main"]').should('have.length.at.least', 1); 
         cy.get('[data-ingredient="sauce"]').should('have.length.at.least', 1);         
     });
+
+    it('ингредиенты в конструктор добавляются корректно', () => {
+        cy.get('[data-testid="constructor-bun-top"]').should('not.exist');
+        cy.get('[data-testid="constructor-ingredient"]').should('not.exist');
+
+        cy.get('[data-ingredient="bun"]:first button')
+            .click({force: true});
+
+        cy.get('[data-testid="constructor-bun-top"]').should('contain', 'Краторная булка N-200i');
+        cy.get('[data-testid="constructor-bun-bottom"]').should('contain', 'Краторная булка N-200i');
+
+        cy.get('[data-ingredient="main"]:first-of-type button').click({force: true});
+
+        cy.get('[data-testid="constructor-ingredient"]').should('have.length', 1);
+        cy.get('[data-testid="constructor-element-text"]').first().should('contain', 'Биокотлета из марсианской Магнолии');
+
+        cy.get('[data-order-button]').should('be.enabled');
+    });
 }); 
 
 describe('Тестирование модального окна', () => {
@@ -20,15 +38,19 @@ describe('Тестирование модального окна', () => {
         cy.visit('/');
       });
     describe ('Открытие модального окна', () =>{
+        beforeEach(() => {
+            cy.get('[data-ingredient="bun"]:first-of-type').as('ingredientCard');
+        });
+
         it('открытие при клике на карточку ингредиента', () => {
-            cy.get('[data-ingredient="bun"]:first-of-type').click();
+            cy.get('@ingredientCard').click();
             cy.get('#modals').should('contain', 'Краторная булка N-200i'); 
             cy.get('#modals [data-testid="calories"]').should('contain', '420');
             cy.get('#modals').children().should('have.length', 2);
         });
 
         it('открытие при клике на карточку ингредиента после перезагрузки', () => {
-            cy.get('[data-ingredient="bun"]:first-of-type').click();
+            cy.get('@ingredientCard').click();
             cy.reload(true);
             cy.get('#modals').children().should('have.length', 2);
         });
@@ -38,7 +60,7 @@ describe('Тестирование модального окна', () => {
         it('закрытие модального окна через крестик', () => {
             cy.get('[data-ingredient="bun"]:first-of-type').click();
             cy.get('#modals button:first-of-type').click();
-            cy.get('#modals').children().should('have.length', 0);
+            cy.get('#modals').should('be.empty');
         });
 
         it('закрытие модального окна через оверлей', () => {
@@ -77,6 +99,12 @@ describe ('Оформление заказа', () =>{
             'have.text',
             orderFixture.order.number
           );
+
+        cy.get('[data-testid="constructor-bun-top"]').should('not.exist');
+        cy.get('[data-testid="constructor-ingredient"]').should('not.exist');
+        cy.get('[data-order-button]').should('be.disabled');
+
+        cy.get('#modals button:first-of-type').click();
     });
 
     afterEach(() => {
